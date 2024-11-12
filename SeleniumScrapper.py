@@ -14,11 +14,15 @@ options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 geckodriver_path = "/snap/bin/geckodriver"
 driver_service = Service(executable_path=geckodriver_path)
-driver = webdriver.Firefox(options=options, service=driver_service)
 
 #set options to block images and flash animations #gottagofast   
 options.set_preference("permissions.default.image", 2)
 options.set_preference("dom.ipc.plugins.enabled.libflashplayer.so", "false")
+
+
+driver = webdriver.Firefox(options=options, service=driver_service)
+
+
 
 def GetImmoLinks():
     # Opens Immoweb
