@@ -20,7 +20,8 @@ def get_links_from_page(page):
     try:
         driver.get(page)
         for link in driver.find_elements(By.XPATH, "//a[contains(@href, '/en/classified/')]"):
-            if(re.match(r'.*project.*',link.get_attribute("href")) == None):
+            link_str = link.get_attribute("href")
+            if(re.match(r'.*project.*',link_str) == None and re.match(r'.*classified/\d+',link_str) == None):
                 links.append(link.get_attribute("href") + '\n')
     finally:
         driver.quit()
