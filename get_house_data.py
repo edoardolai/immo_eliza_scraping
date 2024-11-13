@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup as bs
 import re
 import urllib.parse
 import pandas as pd
-urls =["https://www.immoweb.be/en/classified/villa/for-sale/zulte-machelen/9870/20311323", "https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311343","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311345","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311337","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311338","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311336","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311340","https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/20311344"]
+import numpy as np
+from multiprocessing import Pool
+
 
 # Locality //regex for Neighborhood\sor\slocality and select next sybling
 # Type of property (House/apartment) .classified__title
@@ -46,6 +48,7 @@ def get_house_data(url: str, session):
     if response.status_code == 200:
         house_page = bs(response.content, 'html.parser')
         cleaned_url = re.sub(r"[^\w\s()\u00C0-\u017F-]/+|[\s']*",'',urllib.parse.unquote(url))
+        re.findall(r'for-sale/(\w+([-\w*])*)', urllib.parse.unquote(cleaned_url))
         house_dict['locality'] = re.findall(r'for-sale/(\w+([-\w*])*)', urllib.parse.unquote(cleaned_url))[0][0].title() #usually next sybling is \n
         house_dict['property_type'] = re.findall(r'(classified)/(\w+)',cleaned_url)[0][1].title()
         house_dict['price'] = house_page.select_one('.classified__price .sr-only').get_text().strip('€')
@@ -54,16 +57,78 @@ def get_house_data(url: str, session):
         house_dict['surface_of_land'] = extract_table_data(house_page, r'Surface\sof\sthe\splot')
         house_dict['nb_facades'] = extract_table_data(house_page, r'Number\sof\sfrontages')
         house_dict['state_of_building'] = extract_table_data(house_page, r'Building\scondition')
-        print(house_dict)
+        fireplace = extract_table_data(house_page,r"How\smany\sfireplaces")
+       
+
+        fireplace = fireplace
+        if fireplace is not None and int(fireplace) > 0:
+            fireplace = 1
+        else:
+            fireplace = 0
+
+        house_dict['fireplace'] = fireplace
+
+        kitchen_type = extract_table_data(house_page, r"Kitchen\stype") 
+
+        if (kitchen_type == "Installed") or (kitchen_type == "Hyper equipped") or (kitchen_type == "USA installed") or (kitchen_type == "USA hyper equipped"):
+            kitchen_type = 1
+        else:
+            kitchen_type = 0 
+        house_dict['Equipped kitchen'] = kitchen_type
+
+        garden_surface = extract_table_data(house_page, r"Garden\ssurface")
+        if garden_surface is None:
+            garden = 0
+            garden_surface = 0
+        else:
+            garden = 1
+        house_dict['Garden'] = garden
+        house_dict['Garden surface'] = garden_surface
+
+
+        # Terrace
+        terrace_surface = extract_table_data(house_page,r"Terrace\ssurface")
+        if terrace_surface is None:
+            terrace = 0
+            terrace_surface = 0
+        else:
+            terrace = 1
+        house_dict['Terrace'] = terrace
+        house_dict['Terrace surface'] = garden_surface
+
+        # furnished
+        furnished = extract_table_data(house_page, r"Furnished")
+        if furnished == "Yes":
+            furnished = 1
+        else:
+            furnished = 0
+        house_dict['Furnished'] = garden
+
+
+        # swimming_pool
+        swimming_pool = extract_table_data(house_page, r"Swimming\spool")
+        if swimming_pool == "Yes":
+            swimming_pool = 1
+        else:
+            swimming_pool = 0
+
+        house_dict['Swimming pool'] = swimming_pool
         return house_dict
     else:
         print(f"Failed to fetch {url}: {response.status_code}")
+       
+        
+
+if __name__ == '__main__':
 
 # file = pd.read_csv('test.csv')
-dictionaries = list()
+    dictionaries = list()
 
-with open('test.csv') as file:
-    for url in file.readlines():
-        dictionaries.append(get_house_data(url, session))
-
-print(dictionaries)
+    with open('test.csv') as file:
+        urls = [(url, session) for url in file.readlines()]
+        with Pool() as pool:
+            results = [ res for res in pool.starmap(get_house_data, urls) if res is not None]
+        # for url in file.readlines():
+        #     dictionaries.append(get_house_data(url, session))
+    # print(res[0])
+    pd.DataFrame(results, columns=results[0].keys()).to_csv('test2.csv')
