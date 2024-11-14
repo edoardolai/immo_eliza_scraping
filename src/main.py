@@ -1,7 +1,5 @@
 import requests
-from bs4 import BeautifulSoup as bs
 import pandas as pd
-from pathlib import Path
 from multiprocessing import Pool
 from os.path import exists
 from utils.get_house_data_scraper import get_house_data
@@ -20,13 +18,13 @@ headers = config['headers']
 session.cookies.update(cookies)
 session.headers.update(headers)
 if __name__ == '__main__':
-    if(not exists('house_links.csv')):
+    if not exists('house_links.csv'):
         base_url = 'https://www.immoweb.be/en/search-results/maison-et-appartement/a-vendre?countries=BE&isALifeAnnuitySale=false&isAPublicSale=false&isNewlyBuilt=false&minPrice=10000&page={}&orderBy=relevance'
-        pages = [(base_url.format(page),session) for page in range(300)]
+        pages = [(base_url.format(page),session) for page in range(334)]
 
         with Pool() as pool: 
             all_links = pool.starmap(get_links_from_page, pages)
-        flat_links = [link for sub_list in all_links for link in sub_list] #todo fix this not flattening...
+        flat_links = [link for sub_list in all_links for link in sub_list]
         with open('house_links.csv', mode='w') as file:
             file.writelines(flat_links)
 
