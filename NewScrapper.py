@@ -22,7 +22,7 @@ def ScrapFunction(url, headers):
     
     response = session.get(url, headers=headers)
     data = response.json()
-    links = ["https://www.immoweb.be/en/classified/" +str(result['property']['type']) + "/for-sale/" + str(result['property']['location']['locality'])+ "/" + str(result['property']['location']['postalCode']) + "/" + str(result['id']) for result in data['results']]
+    links = ["https://www.immoweb.be/en/classified/" +str(result['property']['subtype']) + "/for-sale/" + str(result['property']['location']['district'])+ "/" + str(result['property']['location']['postalCode']) + "/" + str(result['id']) for result in data['results']]
     return links
 
 
