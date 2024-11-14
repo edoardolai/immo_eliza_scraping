@@ -22,7 +22,7 @@ session.headers.update(headers)
 if __name__ == '__main__':
     if(not exists('house_links.csv')):
         base_url = 'https://www.immoweb.be/en/search-results/maison-et-appartement/a-vendre?countries=BE&isALifeAnnuitySale=false&isAPublicSale=false&isNewlyBuilt=false&minPrice=10000&page={}&orderBy=relevance'
-        pages = [(base_url.format(page),session) for page in range(192)]
+        pages = [(base_url.format(page),session) for page in range(300)]
 
         with Pool() as pool: 
             all_links = pool.starmap(get_links_from_page, pages)
