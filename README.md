@@ -1,102 +1,85 @@
-# Collecting Data
+# Real Estate Web Scraper
 
-- Repository: `challenge-collecting-data`
-- Type of Challenge: `Consolidation`
-- Duration: `4 days`
-- Deadline: `15/11/2024 16:30`
-- Team challenge : Group
+This project is a web scraping tool designed to collect real estate data from [Immoweb](https://www.immoweb.be/). It fetches property listings, extracts relevant details, and compiles the data into a CSV file for further analysis.
 
-## Learning objectives
+## Features
 
-Use a Python library to collect as much data as possible.
+- Scrapes property links from search result pages.
+- Extracts detailed information about each property, including:
+  - Locality
+  - Zip code
+  - Property type
+  - Price
+  - Number of bedrooms
+  - Living area
+  - Plot surface
+  - Number of facades
+  - Building condition
+  - Availability of amenities (e.g., fireplace, equipped kitchen, garden, terrace, swimming pool).
+- Outputs the data as a CSV file for analysis.
 
-At the end of this challenge, you should :
+## Project Structure
 
-- Be able to scrape a website.
-- Be able to build a dataset from scratch
-- Be able to implement a strategy to collect as much data as possible
+├── config.json # Contains cookies and headers for requests
+├── house_links.csv # List of scraped property links
+├── house_data.csv # Final structured property data
+├── main.py # Main script to run the scraping workflow
+├── utils/
+│ ├── get_house_data_scraper.py # Function to scrape individual property data
+│ ├── get_links_data_scraper.py # Function to scrape property links from search pages
+├── README.md # Project documentation
 
-## The Mission
+### Main Scripts
 
-As you know the real estate company "ImmoEliza" wants to create a Machine Learning model to make price predictions on real estate sales in Belgium.
+1. **`main.py`**:
 
-In that mission your first task is to build a dataset gathering information about at least 10.000 properties all over Belgium. This dataset will be used later as a training set for your prediction model.
+   - Orchestrates the entire scraping process.
+   - Uses multiprocessing for efficiency.
+   - Saves scraped links and data to CSV files.
 
-This dataset should be a `csv` file with the following columns:
+2. **`utils/get_house_data_scraper.py`**:
 
-- Locality
-- Type of property (House/apartment)
-- Subtype of property (Bungalow, Chalet, Mansion, ...)
-- Price
-- Type of sale (Exclusion of life sales)
-- Number of rooms
-- Living Area
-- Fully equipped kitchen (Yes/No)
-- Furnished (Yes/No)
-- Open fire (Yes/No)
-- Terrace (Yes/No)
-  - If yes: Area
-- Garden (Yes/No)
-  - If yes: Area
-- Surface of the land
-- Surface area of the plot of land
-- Number of facades
-- Swimming pool (Yes/No)
-- State of the building (New, to be renovated, ...)
+   - Defines the `get_house_data` function.
+   - Scrapes detailed data from individual property pages.
 
-### Must-have features
+3. **`utils/get_links_data_scraper.py`**:
+   - Defines the `get_links_from_page` function.
+   - Fetches property links from search results pages.
 
-- Data all over Belgium.
-- Minimum 10 000 inputs without duplicates
-- No empty row. If you are missing information, set the value to `None`.
-- The dataset must be clean. Try as much as possible to record only numerical values.
-  **Example**: Instead of defining whether the kitchen is equipped using `"Yes"`, use binary values.
+## Prerequisites
 
+- Python 3.8 or higher
+- Dependencies:
+  - `requests`
+  - `pandas`
+  - `bs4` (Beautiful Soup)
+  - `multiprocessing`
 
-### Some tips and content to support you
+Install dependencies using pip:
 
-- You will find more content about scraping in a previous lesson
-- Think to for creating your dataset
-- Use concurrency to increase the speed of data collection
-- You might have to work around CAPTCHA and other measures to slow you down. Be creative ;)
+```bash
+pip install -r requirements.txt
+```
 
-## Deliverables
+## Usage
 
-1. Publish your source code on a GitHub repository.
-2. Pimp up the README file:
-   - Description
-   - Installation
-   - Usage
-   - (Visuals)
-   - (Contributors)
-   - (Timeline)
-   - (Personal situation)
-3. Small presentation :
-   - How you did it ?
-   - Who did what ?
-   - What went wrong ?
-   - How you solved it ?
+### 1. Run the scraper:
 
-### Steps
+```bash
+python main.py
+```
 
-1. Create the repository
-2. Study the request (What & Why ?)
-3. Identify technical challenges (How ?)
+### 1. Outputs:
 
-## Evaluation criteria
+• house_links.csv: Contains all property URLs scraped from search results.
+• house_data.csv: Contains detailed property data.
 
-| Criteria       | Indicator                                  | Yes/No |
-| -------------- | ------------------------------------------ | ------ |
-| 1. Is complete | Contains a minimum of 10,000 inputs.       | [ ]    |
-|                | Contains data for all of Belgium.          | [ ]    |
-|                | No empty row present in the dataset.       | [ ]    |
-|                | Non-numeric values have been minimized.    | [ ]    |
-| 2. Is great    | Used threading or multiprocessing to speed up the collection. | [ ]    |
-|| Used git properly as a team | [ ]    |
+## Error Handling
 
-## A final note of encouragement
+• If a request fails, the script logs the failed URL and HTTP status code.
+• If a data field is missing, the corresponding value is set to None.
 
-_Attempts to create thinking machines will be a great help in discovering how we think ourselves._
-_- Alan Turing_
+## Notes
 
-![You've got this!](https://i.giphy.com/media/JWuBH9rCO2uZuHBFpm/giphy.gif)
+• The config.json file, which contains the necessary cookies and headers for the scraper, is already provided in the repository. Ensure these values remain up to date for successful requests.
+• The project uses multiprocessing to speed up the scraping process.

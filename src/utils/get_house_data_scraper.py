@@ -1,10 +1,25 @@
 import re
 from bs4 import BeautifulSoup as bs
 import urllib.parse
+from requests import Session
+from typing import Dict, Optional
+def get_house_data(url: str, session: Session) -> Optional[Dict[str]]:
+    '''
+    Scrapes real estate data from a given property URL.
 
+        Args:
+            url (str): The URL of the property listing.
+            session (Session): A `requests.Session` object for managing HTTP connections and cookies.
 
-def get_house_data(url: str, session, headers):
-    response = session.get(url, headers=headers)
+        Returns:
+            Optional[Dict[str, Optional[object]]]: A dictionary containing property details such as locality,
+            zip code, property type, price, number of bedrooms, living area, and other amenities.
+            Returns `None` if the request fails or data extraction is incomplete.
+            
+        Raises:
+            ValueError: If the URL format does not match the expected pattern for key data extraction.
+    '''
+    response = session.get(url)
     house_dict= dict()
     if response.status_code == 200:
         house_page = bs(response.content, 'html.parser')
@@ -32,7 +47,7 @@ def get_house_data(url: str, session, headers):
         kitchen_type = 1 if kitchen_type in kitchen_type_list else 0
         house_dict['Equipped kitchen'] = kitchen_type
         garden_surface = extract_table_data(house_page, r"Garden\ssurface")
-        garden, garden_surface = (0, 0)if garden_surface is None else (1, garden_surface)
+        garden, garden_surface = (0, None)if garden_surface is None else (1, garden_surface)
         house_dict['Garden'] = garden
         house_dict['Garden surface'] = garden_surface
         terrace_surface = extract_table_data(house_page,r"Terrace\ssurface")
@@ -48,8 +63,18 @@ def get_house_data(url: str, session, headers):
         return house_dict
     else:
         print(f"Failed to fetch {url}: {response.status_code}")
+        return None
+def extract_table_data(page: bs, regex: str)->Optional[str]:
+    """
+    Extracts data from a table cell matching a given regex pattern.
 
-def extract_table_data(page, regex):
+    Args:
+        page (bs): The BeautifulSoup object representing the page content.
+        regex (str): The regular expression pattern to search for in table headers.
+
+    Returns:
+        Optional[str]: The text content of the corresponding table cell if found, otherwise None.
+    """
     searched_tag = page.find('th',string = re.compile(regex))
     if searched_tag is not None:
         return page.find('th',string = re.compile(regex)).next_sibling.next_element.next_element.strip()

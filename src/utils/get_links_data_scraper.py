@@ -1,4 +1,19 @@
-def get_links_from_page(url, session):
+from requests import Session
+from typing import List, Optional
+def get_links_from_page(url: str, session: Session):
+        """
+            Fetches property links from a search results page.
+
+            Args:
+                url (str): The URL of the search results page.
+                session (Session): A `requests.Session` object for managing HTTP connections and cookies.
+
+            Returns:
+                Optional[List[str]]: A list of property links formatted as URLs, or `None` if the request fails.
+
+            Raises:
+                ValueError: If the response structure is missing the expected keys (e.g., 'results', 'property', 'id').
+        """
         response = session.get(url)
         if response.status_code == 200:
             data = response.json()
