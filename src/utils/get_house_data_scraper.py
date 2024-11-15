@@ -38,7 +38,7 @@ def get_house_data(url: str, session, headers):
         terrace_surface = extract_table_data(house_page,r"Terrace\ssurface")
         terrace, terrace_surface = (0, None) if terrace_surface is None else (1, terrace_surface)
         house_dict['Terrace'] = terrace
-        house_dict['Terrace surface'] = garden_surface
+        house_dict['Terrace surface'] = terrace_surface
         furnished = extract_table_data(house_page, r"Furnished")
         furnished = 1 if furnished == 'Yes' else 0
         house_dict['Furnished'] = furnished
