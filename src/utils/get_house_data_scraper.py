@@ -8,8 +8,6 @@ def get_house_data(url: str, session, headers):
     house_dict= dict()
     if response.status_code == 200:
         house_page = bs(response.content, 'html.parser')
-        data = response.json()
-        data['results']
         cleaned_url = re.sub(r"[^\w\s()\u00C0-\u017F-]/+|[\s']*",'',urllib.parse.unquote(url))
         re.findall(r'for-sale/(\w+([-\w*])*)', urllib.parse.unquote(cleaned_url))
         locality_match = re.findall(r'for-sale/(\w+([-\w*])*)', cleaned_url)
