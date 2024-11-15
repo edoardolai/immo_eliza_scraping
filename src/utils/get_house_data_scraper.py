@@ -8,11 +8,17 @@ def get_house_data(url: str, session, headers):
     house_dict= dict()
     if response.status_code == 200:
         house_page = bs(response.content, 'html.parser')
+        data = response.json()
+        data['results']
         cleaned_url = re.sub(r"[^\w\s()\u00C0-\u017F-]/+|[\s']*",'',urllib.parse.unquote(url))
         re.findall(r'for-sale/(\w+([-\w*])*)', urllib.parse.unquote(cleaned_url))
-        house_dict['locality'] = re.findall(r'for-sale/(\w+([-\w*])*)',cleaned_url)[0][0].title() 
-        house_dict['zip_code'] = re.findall(r'/(\d{4})/',cleaned_url)[0].title() 
-        house_dict['property_type'] = re.findall(r'(classified)/(\w+[_\w*]*)',cleaned_url)[0][1].title()
+        locality_match = re.findall(r'for-sale/(\w+([-\w*])*)', cleaned_url)
+        #Not all links have these properties so sometimes an empty list is returned, causing an out of range index error
+        house_dict['locality'] = locality_match[0][0].title() if locality_match else None
+        zip_match = re.findall(r'/(\d{4})/', cleaned_url)
+        house_dict['zip_code'] = zip_match[0].title() if zip_match else None
+        property_type_match = re.findall(r'(classified)/(\w+[_\w*]*)', cleaned_url)
+        house_dict['property_type'] = property_type_match[0][1].title() if property_type_match else None
         price = house_page.select_one('.classified__price .sr-only').get_text().strip('€')
         house_dict['price'] = price if price != '' else None
         house_dict['nb_bedrooms'] = extract_table_data(house_page, r'Bedrooms')
