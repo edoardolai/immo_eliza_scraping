@@ -34,7 +34,7 @@ if __name__ == '__main__':
             file.writelines(flat_links)
     if not exists('house_data.csv'):
         with open('house_links.csv') as file:
-            urls = [(url.strip('\n'), session, headers) for url in file.readlines() if url is not None]
+            urls = [(url.strip('\n'), session) for url in file.readlines() if url is not None]
             with Pool() as pool:
                 results = [res for res in pool.starmap(get_house_data, urls) if res is not None]
         pd.DataFrame(results, columns=results[0].keys()).to_csv('house_data.csv')

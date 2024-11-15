@@ -113,5 +113,5 @@ def clean_data_set(data_frame):
     data_frame.drop(data_frame[data_frame['Terrace surface'] < 3].index, inplace = True)
 
     # EXPORT NEW CSV 
-    data_frame.to_csv('houses-clean.csv', index=False)
+    data_frame.to_csv('house_data_clean.csv', index=False)
 

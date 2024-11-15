@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import urllib.parse
 from requests import Session
 from typing import Dict, Optional
-def get_house_data(url: str, session: Session) -> Optional[Dict[str]]:
+def get_house_data(url: str, session: Session) -> Optional[Dict[str,Optional[object]]]:
     '''
     Scrapes real estate data from a given property URL.
 
