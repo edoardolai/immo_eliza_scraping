@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from os.path import exists
 from utils.get_house_data_scraper import get_house_data
 from utils.get_links_data_scraper import get_links_from_page
+from utils.clean_data import clean_data_set
 import json
 
 # Start session
@@ -31,9 +32,12 @@ if __name__ == '__main__':
             flat_links = [link for sub_list in all_links for link in sub_list]
         with open('house_links.csv', mode='w') as file:
             file.writelines(flat_links)
+    if not exists('house_data.csv'):
+        with open('house_links.csv') as file:
+            urls = [(url.strip('\n'), session, headers) for url in file.readlines() if url is not None]
+            with Pool() as pool:
+                results = [res for res in pool.starmap(get_house_data, urls) if res is not None]
+        pd.DataFrame(results, columns=results[0].keys()).to_csv('house_data.csv')
 
-    with open('house_links.csv') as file:
-        urls = [(url.strip('\n'), session, headers) for url in file.readlines() if url is not None]
-        with Pool() as pool:
-            results = [res for res in pool.starmap(get_house_data, urls) if res is not None]
-    pd.DataFrame(results, columns=results[0].keys()).to_csv('house_data.csv')
+    df = pd.read_csv('house_data.csv')
+    clean_data_set(df)
