@@ -19,6 +19,7 @@ This project is a web scraping tool designed to collect real estate data from [I
 - Outputs the data as a CSV file for analysis.
 
 ## Project Structure
+```bash
 
 ├── config.json # Contains cookies and headers for requests
 ├── house_links.csv # List of scraped property links
@@ -28,7 +29,7 @@ This project is a web scraping tool designed to collect real estate data from [I
 │ ├── get_house_data_scraper.py # Function to scrape individual property data
 │ ├── get_links_data_scraper.py # Function to scrape property links from search pages
 ├── README.md # Project documentation
-
+```
 ### Main Scripts
 
 1. **`main.py`**:
