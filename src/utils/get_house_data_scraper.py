@@ -28,6 +28,9 @@ def get_house_data(url: str, session: Session) -> Optional[Dict[str,Optional[obj
         locality_match = re.findall(r'for-sale/(\w+([-\w*])*)', cleaned_url)
         #Not all links have these properties so sometimes an empty list is returned, causing an out of range index error
         house_dict['locality'] = locality_match[0][0].title() if locality_match else None
+        id_match = re.findall(r'/(\d{4})/(\d+)/', cleaned_url) 
+        print(id_match)
+        house_dict['id'] = id_match[0][1].title() if id_match else None
         zip_match = re.findall(r'/(\d{4})/', cleaned_url)
         house_dict['zip_code'] = zip_match[0].title() if zip_match else None
         property_type_match = re.findall(r'(classified)/(\w+[_\w*]*)', cleaned_url)
@@ -45,21 +48,21 @@ def get_house_data(url: str, session: Session) -> Optional[Dict[str,Optional[obj
         kitchen_type = extract_table_data(house_page, r"Kitchen\stype") 
         kitchen_type_list = ['Installed', 'Hyper equipped','USA installed','USA hyper equipped']
         kitchen_type = 1 if kitchen_type in kitchen_type_list else 0
-        house_dict['Equipped kitchen'] = kitchen_type
+        house_dict['equipped_kitchen'] = kitchen_type
         garden_surface = extract_table_data(house_page, r"Garden\ssurface")
         garden, garden_surface = (0, None)if garden_surface is None else (1, garden_surface)
-        house_dict['Garden'] = garden
-        house_dict['Garden surface'] = garden_surface
+        house_dict['garden'] = garden
+        house_dict['garden_surface'] = garden_surface
         terrace_surface = extract_table_data(house_page,r"Terrace\ssurface")
         terrace, terrace_surface = (0, None) if terrace_surface is None else (1, terrace_surface)
-        house_dict['Terrace'] = terrace
-        house_dict['Terrace surface'] = terrace_surface
+        house_dict['terrace'] = terrace
+        house_dict['terrace_surface'] = terrace_surface
         furnished = extract_table_data(house_page, r"Furnished")
         furnished = 1 if furnished == 'Yes' else 0
-        house_dict['Furnished'] = furnished
+        house_dict['furnished'] = furnished
         swimming_pool = extract_table_data(house_page, r"Swimming\spool")
         swimming_pool = 1 if swimming_pool == "Yes" else 0
-        house_dict['Swimming pool'] = swimming_pool
+        house_dict['swimming_pool'] = swimming_pool
         return house_dict
     else:
         print(f"Failed to fetch {url}: {response.status_code}")
