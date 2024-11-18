@@ -70,7 +70,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-### 1. Outputs:
+### 2. Outputs:
 
 • house_links.csv: Contains all property URLs scraped from search results.
 • house_data.csv: Contains detailed property data.
